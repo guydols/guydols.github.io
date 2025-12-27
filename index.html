@@ -1,403 +1,365 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Reddit Video Player</title>
-        <style>
-            * {
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
-            }
-
-            body {
-                background: #1a1a1a;
-                color: #e0e0e0;
-                font-family:
-                    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-                    sans-serif;
-                display: flex;
-                flex-direction: column;
-                height: 100vh;
-                overflow: hidden;
-            }
-
-            header {
-                padding: 20px;
-                background: #0d0d0d;
-                border-bottom: 1px solid #333;
-            }
-
-            h1 {
-                font-size: 24px;
-                margin-bottom: 10px;
-            }
-
-            select {
-                background: #2a2a2a;
-                color: #e0e0e0;
-                border: 1px solid #444;
-                padding: 8px 12px;
-                font-size: 14px;
-                border-radius: 4px;
-                cursor: pointer;
-            }
-
-            select:focus {
-                outline: 2px solid #4a9eff;
-            }
-
-            .video-container {
-                flex: 1;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                padding: 20px;
-                overflow: hidden;
-            }
-
-            .video-title {
-                font-size: 18px;
-                margin-bottom: 15px;
-                text-align: center;
-                max-width: 90%;
-            }
-
-            #videoPlayer {
-                max-width: 100%;
-                max-height: calc(100vh - 300px);
-                background: #000;
-            }
-
-            #youtubePlayer {
-                max-width: 100%;
-                width: 100%;
-                aspect-ratio: 16/9;
-                max-height: calc(100vh - 300px);
-                background: #000;
-                display: none;
-            }
-
-            .player-container {
-                max-width: 100%;
-                display: flex;
-                justify-content: center;
-            }
-
-            .playlist {
-                height: 180px;
-                background: #0d0d0d;
-                border-top: 1px solid #333;
-                overflow-x: auto;
-                overflow-y: hidden;
-                padding: 10px;
-                white-space: nowrap;
-            }
-
-            .playlist-item {
-                display: inline-block;
-                width: 200px;
-                margin-right: 10px;
-                cursor: pointer;
-                vertical-align: top;
-                border: 2px solid transparent;
-                border-radius: 4px;
-                overflow: hidden;
-                transition: border-color 0.2s;
-            }
-
-            .playlist-item:hover {
-                border-color: #4a9eff;
-            }
-
-            .playlist-item.active {
-                border-color: #ff4444;
-            }
-
-            .playlist-item img {
-                width: 100%;
-                height: 112px;
-                object-fit: cover;
-                background: #2a2a2a;
-            }
-
-            .playlist-item-title {
-                padding: 8px;
-                font-size: 12px;
-                white-space: normal;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                display: -webkit-box;
-                -webkit-line-clamp: 2;
-                -webkit-box-orient: vertical;
-                height: 48px;
-            }
-
-            .loading {
-                text-align: center;
-                padding: 40px;
-                font-size: 18px;
-            }
-
-            .shortcuts {
-                position: fixed;
-                bottom: 200px;
-                right: 20px;
-                background: rgba(0, 0, 0, 0.8);
-                padding: 15px;
-                border-radius: 4px;
-                font-size: 12px;
-                opacity: 0;
-                transition: opacity 0.3s;
-            }
-
-            .shortcuts.show {
-                opacity: 1;
-            }
-
-            .shortcuts div {
-                margin: 5px 0;
-            }
-
-            .key {
-                background: #2a2a2a;
-                padding: 2px 6px;
-                border-radius: 3px;
-                font-family: monospace;
-            }
-        </style>
-    </head>
-    <body>
-        <header>
-            <h1>Reddit Video Player</h1>
-            <select id="subredditSelect">
-                <option value="videos">r/videos</option>
-                <option value="documentaries">r/documentaries</option>
-                <option value="mealtimevideos">r/mealtimevideos</option>
-                <option value="fullmoviesonyoutube">
-                    r/fullmoviesonyoutube
-                </option>
-                <option value="lectures">r/lectures</option>
-            </select>
-        </header>
-
-        <div class="video-container">
-            <div class="video-title" id="videoTitle">
-                Select a video to start
-            </div>
-            <div class="player-container">
-                <video id="videoPlayer" controls></video>
-                <iframe
-                    id="youtubePlayer"
-                    frameborder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowfullscreen
-                ></iframe>
-            </div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reddit Video Player</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #1a1a1a;
+            color: #e0e0e0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        header {
+            padding: 20px;
+            background: #0d0d0d;
+            border-bottom: 1px solid #333;
+        }
+        
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        select {
+            background: #2a2a2a;
+            color: #e0e0e0;
+            border: 1px solid #444;
+            padding: 8px 12px;
+            font-size: 14px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        select:focus {
+            outline: 2px solid #4a9eff;
+        }
+        
+        .video-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow: hidden;
+        }
+        
+        .video-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            text-align: center;
+            max-width: 90%;
+        }
+        
+        #videoPlayer {
+            max-width: 100%;
+            max-height: calc(100vh - 300px);
+            background: #000;
+        }
+        
+        #youtubePlayer {
+            max-width: 100%;
+            width: 100%;
+            aspect-ratio: 16/9;
+            max-height: calc(100vh - 300px);
+            background: #000;
+            display: none;
+        }
+        
+        .player-container {
+            max-width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .playlist {
+            height: 180px;
+            background: #0d0d0d;
+            border-top: 1px solid #333;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding: 10px;
+            white-space: nowrap;
+        }
+        
+        .playlist-item {
+            display: inline-block;
+            width: 200px;
+            margin-right: 10px;
+            cursor: pointer;
+            vertical-align: top;
+            border: 2px solid transparent;
+            border-radius: 4px;
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+        
+        .playlist-item:hover {
+            border-color: #4a9eff;
+        }
+        
+        .playlist-item.active {
+            border-color: #ff4444;
+        }
+        
+        .playlist-item img {
+            width: 100%;
+            height: 112px;
+            object-fit: cover;
+            background: #2a2a2a;
+        }
+        
+        .playlist-item-title {
+            padding: 8px;
+            font-size: 12px;
+            white-space: normal;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            height: 48px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 18px;
+        }
+        
+        .shortcuts {
+            position: fixed;
+            bottom: 200px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 4px;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .shortcuts.show {
+            opacity: 1;
+        }
+        
+        .shortcuts div {
+            margin: 5px 0;
+        }
+        
+        .key {
+            background: #2a2a2a;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Reddit Video Player</h1>
+        <select id="subredditSelect">
+            <option value="videos">r/videos</option>
+            <option value="documentaries">r/documentaries</option>
+            <option value="mealtimevideos">r/mealtimevideos</option>
+            <option value="fullmoviesonyoutube">r/fullmoviesonyoutube</option>
+            <option value="lectures">r/lectures</option>
+        </select>
+    </header>
+    
+    <div class="video-container">
+        <div class="video-title" id="videoTitle">Select a video to start</div>
+        <div class="player-container">
+            <video id="videoPlayer" controls></video>
+            <iframe id="youtubePlayer" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         </div>
-
-        <div class="playlist" id="playlist">
-            <div class="loading">Loading videos...</div>
-        </div>
-
-        <div class="shortcuts" id="shortcuts">
-            <div><span class="key">Space</span> Play/Pause (Reddit videos)</div>
-            <div><span class="key">→</span> Next video</div>
-            <div><span class="key">←</span> Previous video</div>
-            <div><span class="key">?</span> Toggle shortcuts</div>
-        </div>
-
-        <script>
-            let videos = [];
-            let currentIndex = 0;
-            let isYouTube = false;
-
-            const videoPlayer = document.getElementById("videoPlayer");
-            const youtubePlayer = document.getElementById("youtubePlayer");
-            const videoTitle = document.getElementById("videoTitle");
-            const playlist = document.getElementById("playlist");
-            const subredditSelect = document.getElementById("subredditSelect");
-            const shortcuts = document.getElementById("shortcuts");
-
-            function getYouTubeID(url) {
-                const regExp =
-                    /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-                const match = url.match(regExp);
-                return match && match[2].length === 11 ? match[2] : null;
-            }
-
-            async function fetchSubreddit(subreddit) {
-                try {
-                    const response = await fetch(
-                        `https://www.reddit.com/r/${subreddit}.json?limit=50`,
-                    );
-                    const data = await response.json();
-
-                    videos = data.data.children
-                        .map((post) => post.data)
-                        .filter((post) => {
-                            // Filter for posts with video content
-                            return (
-                                post.is_video ||
-                                post.domain === "youtube.com" ||
-                                post.domain === "youtu.be" ||
-                                (post.url &&
-                                    (post.url.includes("youtube.com") ||
-                                        post.url.includes("youtu.be")))
-                            );
-                        })
-                        .map((post) => ({
-                            title: post.title,
-                            url: post.url,
-                            thumbnail:
-                                post.thumbnail !== "default"
-                                    ? post.thumbnail
-                                    : "https://via.placeholder.com/200x112/333/666?text=No+Thumbnail",
-                            isRedditVideo: post.is_video,
-                            redditVideo: post.is_video
-                                ? post.media?.reddit_video?.fallback_url
-                                : null,
-                        }));
-
-                    renderPlaylist();
-                    if (videos.length > 0) {
-                        playVideo(0);
-                    }
-                } catch (error) {
-                    console.error("Error fetching subreddit:", error);
-                    playlist.innerHTML =
-                        '<div class="loading">Error loading videos. Try another subreddit.</div>';
+    </div>
+    
+    <div class="playlist" id="playlist">
+        <div class="loading">Loading videos...</div>
+    </div>
+    
+    <div class="shortcuts" id="shortcuts">
+        <div><span class="key">Space</span> Play/Pause (Reddit videos)</div>
+        <div><span class="key">→</span> Next video</div>
+        <div><span class="key">←</span> Previous video</div>
+        <div><span class="key">?</span> Toggle shortcuts</div>
+    </div>
+    
+    <script>
+        let videos = [];
+        let currentIndex = 0;
+        let isYouTube = false;
+        
+        const videoPlayer = document.getElementById('videoPlayer');
+        const youtubePlayer = document.getElementById('youtubePlayer');
+        const videoTitle = document.getElementById('videoTitle');
+        const playlist = document.getElementById('playlist');
+        const subredditSelect = document.getElementById('subredditSelect');
+        const shortcuts = document.getElementById('shortcuts');
+        
+        function getYouTubeID(url) {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+        
+        async function fetchSubreddit(subreddit) {
+            try {
+                // Use CORS proxy to bypass Reddit's CORS restrictions
+                const response = await fetch(`https://corsproxy.io/?${encodeURIComponent(`https://www.reddit.com/r/${subreddit}.json?limit=50`)}`);
+                const data = await response.json();
+                
+                videos = data.data.children
+                    .map(post => post.data)
+                    .filter(post => {
+                        // Filter for posts with video content
+                        return post.is_video || 
+                               post.domain === 'youtube.com' || 
+                               post.domain === 'youtu.be' ||
+                               (post.url && (post.url.includes('youtube.com') || post.url.includes('youtu.be')));
+                    })
+                    .map(post => ({
+                        title: post.title,
+                        url: post.url,
+                        thumbnail: post.thumbnail !== 'default' ? post.thumbnail : 'https://via.placeholder.com/200x112/333/666?text=No+Thumbnail',
+                        isRedditVideo: post.is_video,
+                        redditVideo: post.is_video ? post.media?.reddit_video?.fallback_url : null
+                    }));
+                
+                renderPlaylist();
+                if (videos.length > 0) {
+                    playVideo(0);
                 }
+            } catch (error) {
+                console.error('Error fetching subreddit:', error);
+                playlist.innerHTML = '<div class="loading">Error loading videos. Try another subreddit.</div>';
             }
-
-            function renderPlaylist() {
-                if (videos.length === 0) {
-                    playlist.innerHTML =
-                        '<div class="loading">No videos found.</div>';
-                    return;
-                }
-
-                playlist.innerHTML = videos
-                    .map(
-                        (video, index) => `
-                <div class="playlist-item ${index === currentIndex ? "active" : ""}" onclick="playVideo(${index})">
+        }
+        
+        function renderPlaylist() {
+            if (videos.length === 0) {
+                playlist.innerHTML = '<div class="loading">No videos found.</div>';
+                return;
+            }
+            
+            playlist.innerHTML = videos.map((video, index) => `
+                <div class="playlist-item ${index === currentIndex ? 'active' : ''}" onclick="playVideo(${index})">
                     <img src="${video.thumbnail}" alt="${video.title}">
                     <div class="playlist-item-title">${video.title}</div>
                 </div>
-            `,
-                    )
-                    .join("");
-            }
-
-            function playVideo(index) {
-                if (index < 0 || index >= videos.length) return;
-
-                currentIndex = index;
-                const video = videos[index];
-
-                videoTitle.textContent = video.title;
-
-                if (video.isRedditVideo && video.redditVideo) {
-                    // Play Reddit video
-                    isYouTube = false;
-                    videoPlayer.style.display = "block";
-                    youtubePlayer.style.display = "none";
-                    videoPlayer.src = video.redditVideo;
-                    videoPlayer.load();
-                    videoPlayer.play();
-                } else if (
-                    video.url.includes("youtube.com") ||
-                    video.url.includes("youtu.be")
-                ) {
-                    // Play YouTube video
-                    const youtubeID = getYouTubeID(video.url);
-                    if (youtubeID) {
-                        isYouTube = true;
-                        videoPlayer.style.display = "none";
-                        youtubePlayer.style.display = "block";
-                        youtubePlayer.src = `https://www.youtube.com/embed/${youtubeID}?autoplay=1`;
-                    }
-                }
-
-                // Update playlist highlighting
-                document
-                    .querySelectorAll(".playlist-item")
-                    .forEach((item, i) => {
-                        item.classList.toggle("active", i === index);
-                    });
-
-                // Scroll to active item
-                const activeItem =
-                    document.querySelectorAll(".playlist-item")[index];
-                if (activeItem) {
-                    activeItem.scrollIntoView({
-                        behavior: "smooth",
-                        block: "nearest",
-                        inline: "center",
-                    });
+            `).join('');
+        }
+        
+        function playVideo(index) {
+            if (index < 0 || index >= videos.length) return;
+            
+            currentIndex = index;
+            const video = videos[index];
+            
+            videoTitle.textContent = video.title;
+            
+            if (video.isRedditVideo && video.redditVideo) {
+                // Play Reddit video
+                isYouTube = false;
+                videoPlayer.style.display = 'block';
+                youtubePlayer.style.display = 'none';
+                videoPlayer.src = video.redditVideo;
+                videoPlayer.load();
+                videoPlayer.play();
+            } else if (video.url.includes('youtube.com') || video.url.includes('youtu.be')) {
+                // Play YouTube video
+                const youtubeID = getYouTubeID(video.url);
+                if (youtubeID) {
+                    isYouTube = true;
+                    videoPlayer.style.display = 'none';
+                    youtubePlayer.style.display = 'block';
+                    youtubePlayer.src = `https://www.youtube.com/embed/${youtubeID}?autoplay=1`;
                 }
             }
-
-            function nextVideo() {
-                if (currentIndex < videos.length - 1) {
-                    playVideo(currentIndex + 1);
-                }
+            
+            // Update playlist highlighting
+            document.querySelectorAll('.playlist-item').forEach((item, i) => {
+                item.classList.toggle('active', i === index);
+            });
+            
+            // Scroll to active item
+            const activeItem = document.querySelectorAll('.playlist-item')[index];
+            if (activeItem) {
+                activeItem.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
             }
-
-            function previousVideo() {
-                if (currentIndex > 0) {
-                    playVideo(currentIndex - 1);
-                }
+        }
+        
+        function nextVideo() {
+            if (currentIndex < videos.length - 1) {
+                playVideo(currentIndex + 1);
             }
-
-            // Auto-play next video when current one ends
-            videoPlayer.addEventListener("ended", nextVideo);
-
-            // Keyboard shortcuts
-            document.addEventListener("keydown", (e) => {
-                if (e.target.tagName === "SELECT") return;
-
-                switch (e.key) {
-                    case " ":
-                        e.preventDefault();
-                        if (!isYouTube) {
-                            if (videoPlayer.paused) {
-                                videoPlayer.play();
-                            } else {
-                                videoPlayer.pause();
-                            }
+        }
+        
+        function previousVideo() {
+            if (currentIndex > 0) {
+                playVideo(currentIndex - 1);
+            }
+        }
+        
+        // Auto-play next video when current one ends
+        videoPlayer.addEventListener('ended', nextVideo);
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'SELECT') return;
+            
+            switch(e.key) {
+                case ' ':
+                    e.preventDefault();
+                    if (!isYouTube) {
+                        if (videoPlayer.paused) {
+                            videoPlayer.play();
+                        } else {
+                            videoPlayer.pause();
                         }
-                        break;
-                    case "ArrowRight":
-                        e.preventDefault();
-                        nextVideo();
-                        break;
-                    case "ArrowLeft":
-                        e.preventDefault();
-                        previousVideo();
-                        break;
-                    case "?":
-                        e.preventDefault();
-                        shortcuts.classList.toggle("show");
-                        break;
-                }
-            });
-
-            // Load selected subreddit
-            subredditSelect.addEventListener("change", (e) => {
-                fetchSubreddit(e.target.value);
-            });
-
-            // Initial load
-            fetchSubreddit("videos");
-
-            // Show shortcuts on first load
-            setTimeout(() => {
-                shortcuts.classList.add("show");
-                setTimeout(() => shortcuts.classList.remove("show"), 3000);
-            }, 1000);
-        </script>
-    </body>
+                    }
+                    break;
+                case 'ArrowRight':
+                    e.preventDefault();
+                    nextVideo();
+                    break;
+                case 'ArrowLeft':
+                    e.preventDefault();
+                    previousVideo();
+                    break;
+                case '?':
+                    e.preventDefault();
+                    shortcuts.classList.toggle('show');
+                    break;
+            }
+        });
+        
+        // Load selected subreddit
+        subredditSelect.addEventListener('change', (e) => {
+            fetchSubreddit(e.target.value);
+        });
+        
+        // Initial load
+        fetchSubreddit('videos');
+        
+        // Show shortcuts on first load
+        setTimeout(() => {
+            shortcuts.classList.add('show');
+            setTimeout(() => shortcuts.classList.remove('show'), 3000);
+        }, 1000);
+    </script>
+</body>
 </html>
