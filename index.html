@@ -228,7 +228,7 @@
         async function fetchSubreddit(subreddit) {
             try {
                 // Use CORS proxy to bypass Reddit's CORS restrictions
-                const response = await fetch(`https://corsproxy.io/?${encodeURIComponent(`https://www.reddit.com/r/${subreddit}.json?limit=50`)}`);
+                const response = await fetch(`https://corsproxy.io/?${encodeURIComponent(`https://www.reddit.com/r/${subreddit}.json?limit=200`)}`);
                 const data = await response.json();
                 
                 videos = data.data.children
